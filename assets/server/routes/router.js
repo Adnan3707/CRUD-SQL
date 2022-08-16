@@ -4,6 +4,7 @@ const controller = require('../database/connection')
 const axios = require('axios')
 route.get('/',(req,res)=> {
    axios.get('http://localhost:3000/api/users').then((response)=>{
+      // console.log(response.data.rows[1])
       res.render('index',{users: response.data.rows});
    }).catch(err=>{
       res.send(err)
@@ -15,7 +16,14 @@ route.get('/add-user',(req,res)=> {
 }
 )
 route.get('/update-user',(req,res)=> {
-    res.render('update_user');
+      axios.get('http://localhost:3000/api/users',{ params : { id:req.query.id }}).then((userdata)=>{
+         // console.log(req.query.id)
+         // console.log("Router",userdata.data.rows[0].Email)
+      res.render('update_user',{user: userdata.data.rows});
+   }).catch(err=>{
+      res.send(err)
+   })
+   //  res.render('update_user');
 })
 
 route.post('/api/users', controller.create);

@@ -37,8 +37,10 @@ exports.create = (req,res)=>{
         res.status(400).send({ message : "Content can not be emtpy!"});
         return;
     }
- console.log(req.body)
-    // new user
+
+//  console.log(req.body)
+    
+ // new user
 
     // const user = new Userdb({
     //     name : req.body.name,
@@ -80,9 +82,18 @@ exports.create = (req,res)=>{
 // // retrieve and return all users/ retrive and return a single user
 exports.find = (req, res)=>{
 
-    // if(req.query.id){
-    //     const id = req.query.id;
+    if(req.query.id){
+        const id = req.query.id;
+              con.query('SELECT * FROM Testing WHERE id = ? ',[id], (err, rows) => {
+    // When done with the connection, release it
+    // console.log('The data from user table: \n', rows);
 
+    // console.log(rows)
+    
+    res.send({
+      rows:rows
+    })
+  })
         // Userdb.findById(id)
         //     .then(data =>{
         //         if(!data){
@@ -93,8 +104,8 @@ exports.find = (req, res)=>{
         //     })
         //     .catch(err =>{
         //         res.status(500).send({ message: "Erro retrieving user with id " + id})
-        //     })
-
+            }
+   else{
               con.query('SELECT * FROM Testing ', (err, rows) => {
     // When done with the connection, release it
     // console.log('The data from user table: \n', rows);
@@ -109,8 +120,8 @@ exports.find = (req, res)=>{
         //     .catch(err => {
         //         res.status(500).send({ message : err.message || "Error Occurred while retriving user information" })
         //     })
-    
-  })
+      })
+    }
 }
 
 // // Update a new idetified user by user id
@@ -127,7 +138,9 @@ exports.update = (req, res)=>{
         res.status(400).send({ message : "Content can not be emtpy!"});
         return;
     }
- console.log(req.body)
+
+    // console.log(req.body)
+
   // const { first_name, last_name, email, phone, comments } = req.body;
   // // User the connection
   // connection.query('UPDATE user SET first_name = ?, last_name = ?, email = ?, phone = ?, comments = ? WHERE id = ?', [first_name, last_name, email, phone, comments, req.params.id], (err, rows) => {
@@ -159,16 +172,26 @@ exports.update = (req, res)=>{
 
 // // Delete a user with specified user id in the request
 exports.delete = (req, res)=>{
-  console.log('Entered Delete')
-    con.query('UPDATE Testing SET status = ? WHERE id = ?', ['removed', req.params.id], (err, rows) => {
+  // console.log('Entered Delete')
+  con.query('DELETE FROM Testing WHERE id = ?', [req.params.id], (err, rows) => {
     if (!err) {
-      res.status(200).send({message:'User Status succcessly set removed'})
-      let removedUser = encodeURIComponent('User successeflly removed.');
+      res.status(200).send({message:'User Status succcessly set Deleted'})
     } else {
       console.log(err);
     }
-    console.log('The data from beer table are: \n', rows);
+
+    // console.log('The data from beer table are: \n', rows);
+  
   });
+  //   con.query('UPDATE Testing SET status = ? WHERE id = ?', ['removed', req.params.id], (err, rows) => {
+  //   if (!err) {
+  //     res.status(200).send({message:'User Status succcessly set removed'})
+  //     let removedUser = encodeURIComponent('User successeflly removed.');
+  //   } else {
+  //     console.log(err);
+  //   }
+  //   console.log('The data from beer table are: \n', rows);
+  // });
 //     const id = req.params.id;
 
 //     Userdb.findByIdAndDelete(id)
