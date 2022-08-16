@@ -153,7 +153,7 @@ exports.update = (req, res)=>{
       message:'Updated',
       data: result
     })
-    console.log("Result: " + result);
+    // console.log("Result: " + result);
   });
 
 //     const id = req.params.id;
