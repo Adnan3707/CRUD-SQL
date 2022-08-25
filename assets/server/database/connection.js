@@ -48,7 +48,6 @@ exports.create = (req,res)=>{
     //     gender: req.body.gender,
     //     status : req.body.status
     // })
-
       con.query(
         // `INSERT INTO Testing (name, email, gender, status) VALUES (${req.body.name},${req.body.email},${req.body.gender},${req.body.status})`
 'INSERT INTO Testing SET name = ?, email = ?, gender = ?, status = ?', [req.body.name, req.body.email, req.body.gender,req.body.status]
@@ -132,7 +131,7 @@ exports.update = (req, res)=>{
 //             .status(400)
 //             .send({ message : "Data to update can not be empty"})
 //     }
-  console.log("entered Update")
+  // console.log("entered Update")
     // validate request
     if(!req.body){
         res.status(400).send({ message : "Content can not be emtpy!"});
@@ -169,7 +168,17 @@ exports.update = (req, res)=>{
 //             res.status(500).send({ message : "Error Update user information"})
 //         })
 }
-
+exports.Search =(req,res)=>{
+con.query(
+'SELECT * FROM Testing WHERE name LIKE ?' , [req.query.first], function (err, result) {
+    if (err) throw err;
+    res.status(200).send({
+      message:'Searched',
+      data: result
+    })
+    // console.log("Result: " + result);
+  });
+}
 // // Delete a user with specified user id in the request
 exports.delete = (req, res)=>{
   // console.log('Entered Delete')

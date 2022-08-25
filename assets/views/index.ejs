@@ -1,56 +1,91 @@
-  <!--include header-->
-    <%- include('include/_header') %>
+<!--include header-->
+<%- include('include/_header') %>
     <!--include header-->
 
-        <!-- Main Site -->
-        <main id="site-main">
-            <div class="container">
-                <div class="box-nav d-flex justify-between">
-                    <a href="/add-user" class="border-shadow">
-                        <span class="text-gradient">New User <i class="fas fa-user"></i></span>
-                    </a>
-                </div>
-        
-                <!-- form handling -->
-                <form action="/" method="POST">
-                    <table class="table">
-                        <thead class="thead-dark">
-                            <tr>
-                                <th>ID</th>
-                                <th>Name</th>
-                                <th>@Email</th>
-                                <th>Gender</th>
-                                <th>Status</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                    <% for(var i =0;i< users.length ; i++ ) {%>
-                            <tr>
-                                <td><%= i + 1 %></td>
-                                <td><%= users[i].Name %></td>
-                                <td><%= users[i].Email %></td>
-                                <td><%= users[i].Gender %></td>
-                                <td><%= users[i].Status %></td>
+    <!-- Main Site -->
+    <main id="site-main">
+        <div class="container">
+            <div class="box-nav d-flex justify-between">
+                <a href="/add-user" class="border-shadow">
+                    <span class="text-gradient">New User <i class="fas fa-user"></i></span>
+                </a>
+            </div>
+
+            <!-- form handling -->
+            <form action="/" method="POST" id="index">
+                <table class="table">
+                    <thead class="thead-dark">
+                        <tr>
+                        <button>
+                            <tr class="edit"><input id="edit" type="button" value="EDIT"></tr>
+                        </button>
+                    </tr>
+                    <tr>
+                            <button > <tr><input class="fa fa-save" id="save" type="submit" value="SAVE"></tr>
+                            </button>
+                        </tr> 
+                        <tr>
+                            <button>
+                        <tr class="delete"><input id="delete" type="button" value="DELETE"></tr>
+                        </button>
+                        </tr>
+                        <tr>
+                            <tr><input id="text" type="text" maxlength="1" placeholder="Search by Name"></tr>
+                        </tr>
+                        <tr>
+                            <tr><a  id="sea" href="/Search" class="border-shadow">
+                                <span >Search<i id="search" class="fas fa-user"></i></span>
+                            </a></tr>
+                        </tr>
+                    </thead>
+                </table>
+                <table class="table">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Checked</th>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>@Email</th>
+                            <th>Gender</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% for(var i=0;i< users.length ; i++ ) {%>
+                            <tr class="row">
+                                <td class="ckb">
+                                    <input id="<%= i + 1 %>" name="id" type="checkbox" value="<%= users[i].id %>" />
+                                </td>
+                                <td class="test">
+                                    <%= i + 1 %>
+                                </td>
+                                <td id="name-<%= i + 1 %>"><%= users[i].Name %></td>
+                                <td id="email-<%= i + 1 %>"><%= users[i].Email %></td>
+                                <td id="gender-<%= i + 1 %>"><%= users[i].Gender %></td>
+                                <td id="status-<%= i + 1 %>"><%= users[i].Status %>
+                                </td>
                                 <td>
-                                <a href="/update-user?id=<%=users[i].id%>"  class="btn border-shadow update">
-                                <span class="text-gradent"><i class="fas fa-pencil-alt"></i></span>
-                                </a>
-                                 <a class="btn border-shadow delete" data-id=<%=users[i].id%>>
-                                <span class="text-gradent"><i class="fas fa-times"></i></span>
-                                </a>
-                            </td>
+                                    <a href="/update-user?id=<%=users[i].id%>" class="btn border-shadow update">
+                                        <span class="text-gradent"><i class="fas fa-pencil-alt"></i></span>
+                                    </a>
+                                    <a class="btn border-shadow delete" data-id=<%=users[i].id%>>
+                                        <span class="text-gradent"><i class="fas fa-times"></i></span>
+                                    </a>
+                                </td>
                             </tr>
                             <% } %>
-                        </tbody>
-                    </table>
-                </form>
-            </div>
-                <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"
-                    integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ=="
-                    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-                <script src="../js/index.js"></script>
-        </main>
-        <!-- /Main Site -->
-</body>
-</html>
+                    </tbody>
+                </table>
+            </form>
+        </div>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"
+            integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script src="../js/index.js"></script>
+        <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    </main>
+    <!-- /Main Site -->
+    </body>
+
+    </html>

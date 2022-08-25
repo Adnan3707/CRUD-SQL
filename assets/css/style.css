@@ -17,7 +17,106 @@ a {
     text-decoration: none;
     font-family: 'PT Sans', sans-serif;
 }
+input[type=text] {
+    margin-left: 15px;
+    margin-right: 10px;
+}
 
+#text {
+    width: 20%;
+    padding: 0.1em 1em 0em 0em;
+    margin: 0.5em 0;
+    border: 9px solid var(--border);
+    font-family: 'Barlow', sans-serif;
+    font-size: 1em;
+    border-radius: 0.2em;
+}
+
+#delete ,#save {
+    width: 140px;
+    height: 45px;
+    font-family: 'Roboto', sans-serif;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    font-weight: 500;
+    color: #000;
+    background-color: rgb(141, 141, 141);
+    border: none;
+    border-radius: 45px;
+    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease 0s;
+    cursor: pointer;
+    outline: none;
+    margin-bottom: 5px;
+}
+#sea {
+    width: 140px;
+    height: 45px;
+    letter-spacing: 2.5px;
+    font-weight: 500;
+    color: #000;
+    background-color: rgb(141, 141, 141);
+    border: none;
+    border-radius: 45px;
+    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease 0s;
+    cursor: pointer;
+    outline: none;
+    margin-bottom: 5px;
+}
+#sea:hover {
+    background-color: #312ee5;
+    box-shadow: 0px 15px 20px rgba(46, 229, 157, 0.4);
+    color: #fff;
+    transform: translateY(-7px);
+}
+
+#delete:hover {
+    background-color: #e52e2e;
+    box-shadow: 0px 15px 20px rgba(46, 229, 157, 0.4);
+    color: #fff;
+    transform: translateY(-7px);
+}
+
+#edit {
+    width: 140px;
+    height: 45px;
+    font-family: 'Roboto', sans-serif;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    font-weight: 500;
+    color: #000;
+    background-color: rgb(141, 141, 141);
+    border: none;
+    border-radius: 45px;
+    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease 0s;
+    cursor: pointer;
+    outline: none;
+    margin-bottom: 5px;
+}
+
+#edit:hover {
+    background-color: #2EE59D;
+    box-shadow: 0px 15px 20px rgba(46, 229, 157, 0.4);
+    color: #fff;
+    transform: translateY(-7px);
+}
+
+#save:hover {
+    background-color: #e52e2e;
+    box-shadow: 0px 15px 20px rgba(46, 229, 157, 0.4);
+    color: #fff;
+    transform: translateY(-7px);
+}
+#input{
+        margin-left: 20px;
+    }
+#search{
+        margin-left: 10px;
+    }
 .container {
     max-width: 1024px;
     margin: auto;
