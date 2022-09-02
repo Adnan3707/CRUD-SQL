@@ -29,13 +29,45 @@
                         <tr class="delete"><input id="delete" type="button" value="DELETE"></tr>
                         </button>
                         </tr>
-                        <tr>
-                            <tr><input id="text" type="text" maxlength="1" placeholder="Search by Name"></tr>
+                        <tr class="slider">
+                            <div class="price-input">
+                                <div class="field">
+                                    <span>Min</span>
+                                    <input type="number" class="input-min" value="2500">
+                                </div>
+                                <div class="separator">-</div>
+                                <div class="field">
+                                    <span>Max</span>
+                                    <input type="number" class="input-max" value="7500">
+                                </div>
+                            </div>
+                            <div class="slider">
+                                <div class="progress"></div>
+                            </div>
+                            <div class="range-input">
+                                <input type="range" class="range-min" min="0" max="10000" value="2500" step="100">
+                                <input type="range" class="range-max" min="0" max="10000" value="7500" step="100">
+                            </div>
+                            </div>
                         </tr>
                         <tr>
-                            <tr><a  id="sea" href="/Search" class="border-shadow">
-                                <span >Search<i id="search" class="fas fa-user"></i></span>
-                            </a></tr>
+                            <tr><input id="text" type="text"  onkeyup="search()" placeholder="Search by Name"></tr>
+                        </tr>
+                        <tr> Search By Status :- 
+                                        <select id='statusSearch'>
+                                            <option value="Select" selected="selected">Select</option>
+                                            <option value="Active">Active</option>
+                                            <option value="Inactive">Inactive</option>
+                                        </select>
+                        </tr>
+                        <tr>
+                            <label>Add Input Column :-
+                                <input id="AddColumninp" list="AddColumn" name="AddColumn" /></label>
+                                <input id="AddColumn" type="button" value="Add Row">
+                            <datalist id="AddColumn">
+                                <option value="Add Input">
+                                <option value="Add Dropdown">
+                            </datalist>
                         </tr>
                     </thead>
                 </table>
@@ -43,38 +75,36 @@
                     <thead class="thead-dark">
                         <tr>
                             <th>Checked</th>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>@Email</th>
-                            <th>Gender</th>
-                            <th>Status</th>
+                    <!-- <% for(var i=0;i< users.colmn.length ; i++ ) {%>
+                            <th><%= users.colmn[i].COLUMN_NAME %></th>
+                            <% } %>
                             <th>Action</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <% for(var i=0;i< users.length ; i++ ) {%>
+                    <tbody id="tbody">
+                        <% for(var i=0;i< users.users.length ; i++ ) {%>
                             <tr class="row">
                                 <td class="ckb">
-                                    <input id="<%= i + 1 %>" name="id" type="checkbox" value="<%= users[i].id %>" />
+                                    <input class="myCheckbox" id="<%= i + 1 %>" name="id" type="checkbox" value="<%= users.users[i].id %>" />
                                 </td>
                                 <td class="test">
                                     <%= i + 1 %>
                                 </td>
-                                <td id="name-<%= i + 1 %>"><%= users[i].Name %></td>
-                                <td id="email-<%= i + 1 %>"><%= users[i].Email %></td>
-                                <td id="gender-<%= i + 1 %>"><%= users[i].Gender %></td>
-                                <td id="status-<%= i + 1 %>"><%= users[i].Status %>
-                                </td>
+                                <td id="name-<%= i + 1 %>"><%= users.users[i].Name %></td>
+                                <td id="email-<%= i + 1 %>"><%= users.users[i].Email %></td>
+                                <td id="gender-<%= i + 1 %>"><%= users.users[i].Gender %></td>
+                                <td id="status-<%= i + 1 %>"><%= users.users[i].Status %></td>
                                 <td>
-                                    <a href="/update-user?id=<%=users[i].id%>" class="btn border-shadow update">
+                                    <a href="/update-user?id=<%=users.users[i].id%>" class="btn border-shadow update">
                                         <span class="text-gradent"><i class="fas fa-pencil-alt"></i></span>
                                     </a>
-                                    <a class="btn border-shadow delete" data-id=<%=users[i].id%>>
+                                    <a class="btn border-shadow delete" data-id=<%=users.users[i].id%>>
                                         <span class="text-gradent"><i class="fas fa-times"></i></span>
                                     </a>
                                 </td>
                             </tr>
-                            <% } %>
+                            <% } %> -->
+                            <div id="myGrid" class="ag-theme-alpine" style="height: 500px"></div>
                     </tbody>
                 </table>
             </form>
@@ -84,8 +114,187 @@
             crossorigin="anonymous" referrerpolicy="no-referrer"></script>
         <script src="../js/index.js"></script>
         <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+        <script src="https://cartodb-libs.global.ssl.fastly.net/carto.js/v4.0.0-beta.25/carto.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/11.1.0/nouislider.min.js"></script>
+        <script src="https://unpkg.com/ag-grid-community/dist/ag-grid-community.min.js"></script>
     </main>
     <!-- /Main Site -->
+    <script type="text/javascript">
+
+        // // Function to demonstrate calling grid's API
+        function deselect() {
+            gridOptions.api.deselectAll()
+        }
+        // Grid Options are properties passed to the grid
+        const gridOptions = {
+
+            // each entry here represents one column
+            columnDefs: [
+                { field: "id" },
+                { field: "Name",
+                    editable: true 
+            },
+                { field: "Email",
+                    editable: true },
+                { field: "Gender",
+                    editable: true 
+                },
+                { field: "Status",
+                    editable: true },
+            ],
+
+            // default col def properties get applied to all columns
+            defaultColDef: { sortable: true, filter: true },
+             pagination: true,
+            editType: 'fullRow',
+            rowSelection: 'multiple', // allow rows to be selected
+            animateRows: true, // have rows animate to new positions when sorted
+            onCellValueChanged: onCellValueChanged,
+            cellEditorSelector: cellEditorSelector
+            // example event handler
+            // onCellClicked: params => {
+            //     console.log('cell was clicked', params.data)
+            // }
+        };
+        function cellEditorSelector(params) {
+            console.log("clicked")
+            console.log(params)
+                if (params.data.Gender === 'Male') {
+                    return {
+                        component: 'agRichSelectCellEditor',
+                        params: {
+                            values: ['Male', 'Female'],
+                        },
+                        popup: true,
+                    };
+                }
+
+                return undefined;
+            }
+        function onCellValueChanged(event) {
+              var request = {
+                url: `http://localhost:3000/api/users/${event.data.id}`,
+                method: "PUT",
+                data: event.data,
+            };
+
+            $.ajax(request).done(function (response) {
+                // alert("Data Updated Successfully!");
+            });
+            }
+        // get div to host the grid
+        const eGridDiv = document.getElementById("myGrid");
+        // new grid instance, passing in the hosting DIV and Grid Options
+        new agGrid.Grid(eGridDiv, gridOptions);
+
+        // Fetch data from server
+        fetch("http://localhost:3000/api/users")
+            .then(response => response.json())
+            .then(data => {
+                console.log(data)
+                // load fetched data into grid
+                gridOptions.api.setRowData(data.rows);
+            });
+
+//    const columnDefs = [
+//         {
+//             headerName: 'Name',
+//         field: 'Name'
+//             // valueGetter: (params) => {
+//             //     return params.data.firstName + ' ' + params.data.lastName;
+//             // },
+//             // valueSetter: (params) => {
+//             //     var fullName = params.newValue;
+//             //     var nameSplit = fullName.split(' ');
+//             //     var newFirstName = nameSplit[0];
+//             //     var newLastName = nameSplit[1];
+//             //     var data = params.data;
+
+//             //     if (data.firstName !== newFirstName || data.lastName !== newLastName) {
+//             //         data.firstName = newFirstName;
+//             //         data.lastName = newLastName;
+//             //         // return true to tell grid that the value has changed, so it knows
+//             //         // to update the cell
+//             //         return true;
+//             //     } else {
+//             //         // return false, the grid doesn't need to update
+//             //         return false;
+//             //     }
+//             // },
+//         },
+//         {
+//             headerName: 'Email',
+//             field: 'Email',
+//         },
+//         {
+//             headerName: 'Gender',
+//        field: 'Gender',
+//             // valueGetter: (params) => {
+//             //     return params.data.b;
+//             // },
+//             // valueSetter: (params) => {
+//             //     var newValInt = parseInt(params.newValue);
+//             //     var valueChanged = params.data.b !== newValInt;
+//             //     if (valueChanged) {
+//             //         params.data.b = newValInt;
+//             //     }
+//             //     return valueChanged;
+//             // },
+//         },
+//         {
+//             headerName: 'Status',
+//        field: 'Status',
+//             // valueGetter: (params) => {
+//             //     if (params.data.c) {
+//             //         return params.data.c.x;
+//             //     } else {
+//             //         return undefined;
+//             //     }
+//             // },
+//             // valueSetter: (params) => {
+//             //     var newValInt = parseInt(params.newValue);
+//             //     if (!params.data.c) {
+//             //         params.data.c = {};
+//             //     }
+
+//             //     var valueChanged = params.data.c.x !== newValInt;
+//             //     if (valueChanged) {
+//             //         params.data.c.x = newValInt;
+//             //     }
+//             //     return valueChanged;
+//             // }
+//         },
+//     ];
+
+//     const gridOptions = {
+//         defaultColDef: {
+//             flex: 1,
+//             resizable: true,
+//             editable: true,
+//         },
+//         columnDefs: columnDefs,
+//         rowData: fetch("http://localhost:3000/api/users")
+//              .then(response => response.json())
+//              .then(data => {
+//                  console.log(data.rows)
+//                  return data.rows
+//                  // load fetched data into grid
+//                 // gridOptions.api.setRowData(data.rows);
+//              }),
+//         onCellValueChanged: onCellValueChanged,
+//     };
+
+//     function onCellValueChanged(event) {
+//         console.log('Data after change is', event.data);
+//     }
+
+//     // setup the grid after the page has finished loading
+//     document.addEventListener('DOMContentLoaded', function () {
+//         var gridDiv = document.querySelector('#myGrid');
+//         new agGrid.Grid(gridDiv, gridOptions);
+//     });
+   
+   </script>
     </body>
 
     </html>

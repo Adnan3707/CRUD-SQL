@@ -1,3 +1,97 @@
+const debounce = function (fn, d) {
+  let timer;
+  return function () {
+    let context = this,
+      args = arguments;
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      ByValue.apply(context, arguments);
+    }, d);
+  };
+};
+
+const betterFunction = debounce(ByValue, 5000);
+
+const rangeInput = document.querySelectorAll(".range-input input"),
+priceInput = document.querySelectorAll(".price-input input"),
+range = document.querySelector(".slider .progress");
+var rnage = { value1: 0, value2: 0 };
+let priceGap = 1000;
+priceInput.forEach((input) => {
+  input.addEventListener("input", (e) => {
+    let minPrice = parseInt(priceInput[0].value),
+      maxPrice = parseInt(priceInput[1].value);
+
+    if (maxPrice - minPrice >= priceGap && maxPrice <= rangeInput[1].max) {
+      if (e.target.className === "input-min") {
+        rangeInput[0].value = minPrice;
+        range.style.left = (minPrice / rangeInput[0].max) * 100 + "%";
+      } else {
+        rangeInput[1].value = maxPrice;
+        range.style.right = 100 - (maxPrice / rangeInput[1].max) * 100 + "%";
+      }
+    }
+    rnage.value1 = minPrice;
+    rnage.value2 = maxPrice;
+    ByValue();
+  });
+});
+rangeInput.forEach((input) => {
+  input.addEventListener("input", (e) => {
+    let minVal = parseInt(rangeInput[0].value),
+      maxVal = parseInt(rangeInput[1].value);
+
+    if (maxVal - minVal < priceGap) {
+      if (e.target.className === "range-min") {
+        rangeInput[0].value = maxVal - priceGap;
+      } else {
+        rangeInput[1].value = minVal + priceGap;
+      }
+    } else {
+      priceInput[0].value = minVal;
+      priceInput[1].value = maxVal;
+      range.style.left = (minVal / rangeInput[0].max) * 100 + "%";
+      range.style.right = 100 - (maxVal / rangeInput[1].max) * 100 + "%";
+    }
+    rnage.value1 = minVal;
+    rnage.value2 = maxVal;
+    betterFunction();
+  });
+});
+
+function ByValue() {
+  var request = {
+    url: `http://localhost:3000/api/users/search/id`,
+    method: "GET",
+    data: rnage,
+  };
+  $.ajax(request).done(function (response) {
+    // console.log(response)
+    document.getElementById("tbody").innerHTML = "";
+    response.data.forEach((ele, idx) => {
+      document.getElementById("tbody").innerHTML += document.getElementById(
+        "tbody"
+      ).innerHTML = `
+              <tr class="row">  <td class="ckb"> 
+              <input class="myCheckbox" id="${
+                idx + 1
+              }" name="id" type="checkbox" value="${ele.id}" />
+              </td> <td class="test"> ${idx + 1} </td> <td id="name-${
+        idx + 1
+      }">${ele.Name}</td> <td id="email-${idx + 1}">${
+        ele.Email
+      } </td> <td id="gender-${idx + 1}">${ele.Gender} </td> <td id="status-${
+        idx + 1
+      }">${ele.Status}</td> <td>    
+         <a href="/update-user?id=${
+           ele.id
+         }" class="btn border-shadow update">         <span class="text-gradent"><i class="fas fa-pencil-alt"></i></span>     </a>     <a class="btn border-shadow delete" data-id=${
+        ele.id
+      }>         <span class="text-gradent"><i class="fas fa-times"></i></span>     </a> </td> </tr>`;
+    });
+  });
+}
+
 $("#add_user").submit(function (event) {
   alert("Data Saved Sucessfully");
 });
@@ -9,6 +103,7 @@ $("#update_user").submit(function (event) {
   $.map(unindexed_array, function (n, i) {
     data[n["name"]] = n["value"];
   });
+  console.log(data)
   var request = {
     url: `http://localhost:3000/api/users/${data.id}`,
     method: "PUT",
@@ -19,6 +114,43 @@ $("#update_user").submit(function (event) {
     alert("Data Updated Successfully!");
   });
 });
+
+function search() {
+  var data = $("input:text").val();
+  const search = new Object();
+  search.first = data.toString() + "%";
+  var request = {
+    url: `http://localhost:3000/api/users/search/new`,
+    method: "GET",
+    data: search,
+  };
+  $.ajax(request).done(function (response) {
+    console.log(response)
+    document.getElementById("tbody").innerHTML = "";
+    response.data.forEach((ele, idx) => {
+      document.getElementById("tbody").innerHTML += document.getElementById(
+        "tbody"
+      ).innerHTML = `<tr class="row">  <td class="ckb"> 
+              <input class="myCheckbox" id="${
+                idx + 1
+              }" name="id" type="checkbox" value="${
+        ele.id
+      }" /></td> <td class="test"> ${idx + 1} </td> <td id="name-${idx + 1}">${
+        ele.Name
+      }</td> <td id="email-${idx + 1}">${ele.Email} </td> <td id="gender-${
+        idx + 1
+      }">${ele.Gender} </td> <td id="status-${idx + 1}">${
+        ele.Status
+      }</td> <td>    
+         <a href="/update-user?id=${
+           ele.id
+         }" class="btn border-shadow update">         <span class="text-gradent"><i class="fas fa-pencil-alt"></i></span>     </a>     <a class="btn border-shadow delete" data-id=${
+        ele.id
+      }>         <span class="text-gradent"><i class="fas fa-times"></i></span>     </a> </td> </tr>`;
+    });
+  });
+}
+
 if (window.location.pathname == "/") {
   $onTabel = $(".table tbody tr button.update");
   $ondelete = $(".table tbody td a.delete");
@@ -37,18 +169,14 @@ if (window.location.pathname == "/") {
       });
     }
   });
-  // var unindexed_array = $(this).serializeArray()
-  // console.log(unindexed_array)
-  // var checkbox = document.querySelectorAll('input[type=checkbox]')[0]
-  // var id = document.querySelectorAll('input[type=checkbox]')[0].id
-  // console.log(document.querySelectorAll('input[type=checkbox]'))
-  // var tuser = document.getElementById("users").innerHTML
-  // console.log(checkbox)
-  // console.log(tuser)
+
+
+
   var arr = [];
   var arrdel = [];
   $("input:checkbox").change(function () {
     var $this = $(this);
+    console.log(this);
     if ($this.is(":checked")) {
       if (!arr.includes(this.id)) {
         arr.push(this.id);
@@ -56,87 +184,12 @@ if (window.location.pathname == "/") {
       }
     }
   });
-  // checkbox.addEventListener('change', function() {
-  //     if (this.checked) {
-  //         // var empty = document.getElementById("First")
-  //         // console.log(empty)
-  //         // var name = document.getElementById("First").innerHTML
-  //         // var change = ''
-  //         // console.log("Checkbox is checked..",document.getElementById("First").innerHTML );
-  //         // document.getElementById("First").innerHTML  = `<input type="text" name="name-<%= users[i].id %>" value=${name} placeholder="Mark Stoenis"/>`
-  //         let first = document.getElementById("name").innerHTML
-  //         var email = document.getElementById("email-1").innerHTML
-  //         let mf = document.getElementById("gender-1").innerHTML
-  //         // var male = document.getElementById("male-1").innerHTML
-  //         // var female = document.getElementById("female-1").innerHTML
-  //         let ai = document.getElementById("status-1").innerHTML
-  //         // var active = document.getElementById("active-1").innerHTML
-  //         // var inactive = document.getElementById("inactive-1").innerHTML
-
-  //         document.getElementById("name").innerHTML = `<input  type="text" name="name" value="${first}" placeholder="Mark Stoenis" >`
-  //         document.getElementById("email-1").innerHTML = `<input  type="text" name="email" value="${email}" placeholder="example@gmail.com">`
-  //         if(mf == 'Male'){
-  //             document.getElementById("gender-1").innerHTML= `
-  //             <select name='gender'>
-  //                 <option value="Male" selected="selected">Male</option>
-  //                 <option value="Female">Female</option>
-  //             </select>
-  //             `
-  //         }else{
-  //             document.getElementById("gender-1").innerHTML =
-  //             `
-  //             <select name='gender'>
-  //                 <option value="Male">Male</option>
-  //                 <option value="Female" selected="selected">Female</option>
-  //             </select>
-  //              `
-  //         }
-  //         if(ai=='Active'){
-  //        document.getElementById("status-1").innerHTML =
-  //        `
-  //             <select name='status'>
-  //                 <option value="Active" selected="selected">Active</option>
-  //                 <option value="Inactive">Inactive</option>
-  //             </select>
-  //              `
-  //         }else{
-  //              document.getElementById("status-1").innerHTML =
-  //        `
-  //             <select name='status'>
-  //                 <option value="Active">Active</option>
-  //                 <option value="Inactive" selected="selected">Inactive</option>
-  //             </select>
-  //             `
-  //         }
-
-  //         // document.getElementById("First").addEventListener('input',function(event){
-  //         //     change+=event.data
-  //         //     console.log(change)
-  //         // })
-  //     }
-  //     // else {
-  //     //     document.getElementById("First").innerHTML= empty
-  //     //     console.log("Checkbox is not checked..");
-  //     // }
-  //     });
-  // console.log(document.getElementById("check 1"))
-
-  //     function validate() {
-  //     if (document.getElementById("check 1").checked) {
-  //         alert("checked");
-  //         console.log('Checked')
-  //     } else {
-  //         alert("You didn't check it! Let me check it for you.");
-  //     }
-  // }
-
-  // var save = document.getElementById("save");
 }
 var edit = document.getElementById("edit");
 edit.addEventListener("click", function (event) {
+  console.log(arr);
   event.preventDefault();
   arr.forEach((ele) => {
-    // console.log(ele)
     let first = document.getElementById(`name-${ele}`).innerHTML;
     var email = document.getElementById(`email-${ele}`).innerHTML;
     let mf = document.getElementById(`gender-${ele}`).innerHTML;
@@ -149,7 +202,7 @@ edit.addEventListener("click", function (event) {
       `email-${ele}`
     ).innerHTML = `<input  type="text" name="email" value="${email}" placeholder="example@gmail.com">`;
 
-     ai.startsWith("A")
+    ai.startsWith("A")
       ? (document.getElementById(`status-${ele}`).innerHTML = `
             <select name='status'>
                 <option value="Active" selected="selected">Active</option>
@@ -163,7 +216,7 @@ edit.addEventListener("click", function (event) {
             </select>
             `);
 
-  if (mf == "Male") {
+    if (mf == "Male") {
       document.getElementById(`gender-${ele}`).innerHTML = ` 
                 <select name='gender'>
                     <option value="Male" selected="selected">Male</option>
@@ -182,10 +235,6 @@ edit.addEventListener("click", function (event) {
   arr = [];
 });
 $("#index").submit(function (event) {
-  // console.log(document.querySelectorAll('.ckb'))
-  // var allTr = document.querySelectorAll(".ckb");
-  // // var chkbx = allTr[1].getElementsByTagName('td')[0]
-  // // console.log(chkbx)
   event.preventDefault();
   var data = {};
   var unindexed_array = $(this).serializeArray();
@@ -222,57 +271,26 @@ $("#index").submit(function (event) {
   }).then(function () {
     location.reload();
   });
-
-  //     console.log(unindexed_array)
-  //     console.log(unindexed_array)
-  //     var values = [];
-  //     for(var i=0; i< unindexed_array.length; i++)
-  //     values.push([unindexed_array[i].value]);
-  // values.flat(1)
-  // console.log(values.flat(1))
-  // const mid = Math.floor(values.flat(1).length / 2);
-  // const result = [[0, mid], [mid, values.flat(1).length]].map(idxs => values.flat(1).slice(...idxs))
-  //         var bulk = {
-  //         "url" : `http://localhost:3000/api/users/bulk/all`,
-  //         "method" : "PUT",
-  //         "data" : result
-  //     }
-  //         $.ajax(bulk).done(function(response){
-  //         alert("Data Updated Successfully!");
-  //     })
-
-  // console.log(result)
-  //     // console.log(values.flat(1))
-  //     $.map(unindexed_array, function(n, i){
-  //        data[n['name']] = n['value'] ;
-  //     //    console.log(data.name)
-  //        if(data.name){
-  //         console.log(data.name)
-  //        }
-  //     //    console.log(unindexed_array[i])
-  //     })
-  // console.log(data)
 });
-$("input:text").change(function (event) {
-  console.log("Entered TExt");
-  $("#sea").prop(
-    "href",
-    `http://localhost:3000/Search?first=${$("input:text").val()}%`
-  );
-});
-$("#search").click(function (event) {
-  event.preventDefault();
-  console.log("clivked");
-  console.log($("input:text").val());
-  var request = {
-    url: `http://localhost:3000/Search?first=${$("input:text").val()}%`,
-    method: "GET",
-  };
+// $("input:text").change(function (event) {
+//   console.log("Entered TExt");
+//   $("#sea").prop(
+//     "href",
+//     `http://localhost:3000/Search?first=${$("input:text").val()}%`
+//   );
+// });
+// $("#search").click(function (event) {
+//   event.preventDefault();
+//   console.log($("input:text").val());
+//   var request = {
+//     url: `http://localhost:3000/Search?first=${$("input:text").val()}%`,
+//     method: "GET",
+//   };
 
-  $.ajax(request).done(function (response) {});
-});
+//   $.ajax(request)
+// });
 $("#delete").click(function (event) {
-  console.log("clicked")
+  console.log("clicked");
   swal({
     title: "Are you sure?",
     text: "Once deleted, you will not be able to recover this imaginary file!",
@@ -296,7 +314,105 @@ $("#delete").click(function (event) {
         location.reload();
       });
     } else {
-      swal("Everything is safe!")
+      swal("Everything is safe!");
     }
   });
 });
+// $('input[name="id"]').change(function () {
+//   console.log("Hello");
+// });
+// $("input[name='id']").each(function () {
+//   console.log(this.value + ":" + this.checked);
+// });
+$("#statusSearch").change(function () {
+  var search = new Object();
+  search.first = $("#statusSearch").find(":selected").text().toString();
+  var request = {
+    url: `http://localhost:3000/api/users/search/sta`,
+    method: "GET",
+    data: search,
+  };
+  $.ajax(request).done(function (response) {
+    document.getElementById("tbody").innerHTML = "";
+    // console.log(response.data)
+    response.data.forEach((ele, idx) => {
+      document.getElementById("tbody").innerHTML +=document.getElementById(
+        "tbody"
+      ).innerHTML = `<tr class="row">  <td >
+              <input class="myCheckbox" id="${
+                idx + 1
+              }" name="id" type="checkbox" value="${ele.id}" />
+              </td> <td class="test"> ${idx + 1} </td> <td id="name-${
+        idx + 1
+      }">${ele.Name}</td> <td id="email-${idx + 1}">${
+        ele.Email
+      } </td> <td id="gender-${idx + 1}">${ele.Gender} </td> <td id="status-${
+        idx + 1
+      }">${ele.Status}</td> <td>    
+         <a href="/update-user?id=${
+           ele.id
+         }" class="btn border-shadow update">         <span class="text-gradent"><i class="fas fa-pencil-alt"></i></span>     </a>     <a class="btn border-shadow delete" data-id=${
+        ele.id
+      }>         <span class="text-gradent"><i class="fas fa-times"></i></span>     </a> </td> </tr>`;
+    });
+  });
+});
+// $(".myCheckbox").prop("checked", true).change(function(){
+//   console.log("clicked")
+// })
+$("tbody").on("change", "input[class='myCheckbox']", function () {
+  if (this.checked) {
+    if (!arr.includes(this.id)) {
+      arr.push(this.id);
+      arrdel.push(this.value);
+    }
+  }
+});
+$("#AddColumn").click(function () {
+  console.log($("#AddColumninp").val());
+    var add = new Object();
+    add.first = $("#AddColumninp").val();
+  // var data = $("#AddColumninp").val();
+    var request = {
+    url: `http://localhost:3000/api/users/addclm`,
+    method: "GET",
+    data: add
+  };
+  $.ajax(request).done(function (response) {
+    console.log(response)
+  })
+
+
+    // console.log(
+    //   $("#AddColumn").find(":selected").text().toString().includes("Input")
+    // );
+});
+
+// function searchdata(self){
+// var val=String(self.value).toLowerCase();
+// var table=document.getElementById('mytable')
+// var altr=table.getElementsByTagName('tr')
+
+// if(val!=''){
+//   for (var r = 1; r < altr.length; r++) {
+//     var row = altr[r];
+//     var alltd = row.getElementsByTagName("td");
+//     var value = alltd[2].innerText;
+//     // console.log(value);
+
+//     if (String(value).toLowerCase().indexOf(val) == -1) {
+//       row.style.display = "none";
+//     }else{
+//       row.style.display = "";
+//     }
+//   }
+// }else{
+//     for (var r = 1; r < altr.length; r++) {
+//       var row = altr[r];
+//         row.style.display = "";
+      
+//     }
+
+// }
+
+// }

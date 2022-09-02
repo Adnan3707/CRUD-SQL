@@ -17,6 +17,7 @@
     "morgan": "^1.10.0",
     "mysql": "^2.18.1",
     "nodemon": "^2.0.19",
+    "nouislider": "^15.6.1",
     "sweetalert": "^2.1.2",
     "sweetalert2": "^11.4.29"
   }
